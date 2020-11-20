@@ -2812,7 +2812,7 @@ void CreateDictHeader(std::ostream &dictStream, const std::string &main_dictname
 
 void AddNamespaceSTDdeclaration(std::ostream &dictStream)
 {
-   dictStream  << "// The generated code does not explicitly qualifies STL entities\n"
+   dictStream  << "// The generated code does not explicitly qualify STL entities\n"
                << "namespace std {} using namespace std;\n\n";
 }
 
@@ -4537,6 +4537,7 @@ int RootClingMain(int argc,
    }
 
    std::ostream &dictStream = (!gOptIgnoreExistingDict && !gOptDictionaryFileName.empty()) ? fileout : std::cout;
+   bool isACLiC = linkdef.length() > 16 && !linkdef.compare(linkdef.size() - 16, 16, "_ACLiC_linkdef.h");
 
    if (!gOptIgnoreExistingDict) {
       // Now generate a second stream for the split dictionary if it is necessary
@@ -4560,9 +4561,12 @@ int RootClingMain(int argc,
          CreateDictHeader(*splitDictStream, main_dictname);
 
       if (!gOptNoGlobalUsingStd) {
-         AddNamespaceSTDdeclaration(dictStream);
-         if (gOptSplit) {
-            AddNamespaceSTDdeclaration(*splitDictStream);
+         // ACLiC'ed macros might rely on `using namespace std` in front of user headers
+         if (isACLiC) {
+            AddNamespaceSTDdeclaration(dictStream);
+            if (gOptSplit) {
+               AddNamespaceSTDdeclaration(*splitDictStream);
+            }
          }
       }
    }
@@ -4797,6 +4801,15 @@ int RootClingMain(int argc,
          GenerateNecessaryIncludes(dictStream, includeForSource, extraIncludes);
          if (gOptSplit) {
             GenerateNecessaryIncludes(*splitDictStream, includeForSource, extraIncludes);
+         }
+      }
+      if (!gOptNoGlobalUsingStd) {
+         // ACLiC'ed macros might have relied on `using namespace std` in front of user headers
+         if (!isACLiC) {
+            AddNamespaceSTDdeclaration(dictStream);
+            if (gOptSplit) {
+               AddNamespaceSTDdeclaration(*splitDictStream);
+            }
          }
       }
       if (gDriverConfig->fInitializeStreamerInfoROOTFile) {
