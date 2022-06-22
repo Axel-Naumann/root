@@ -366,6 +366,7 @@ void SourceManager::invalidateCache(FileID FID) {
     return;
   if (ContentCache *&E = FileInfos[Entry]) {
     E->setBuffer(nullptr);
+    E->IsBufferInvalid = true;
     E = 0;
   }
   if (!FID.isInvalid()) {
@@ -374,6 +375,7 @@ void SourceManager::invalidateCache(FileID FID) {
       SrcMgr::ContentCache& CC =
         const_cast<SrcMgr::ContentCache&>(SLocE.getFile().getContentCache());
       CC.setBuffer(nullptr);
+      CC.IsBufferInvalid = true;
     }
   }
   getFileManager().invalidateCache(const_cast<FileEntry*>(Entry));
