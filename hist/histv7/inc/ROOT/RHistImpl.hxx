@@ -60,6 +60,25 @@ inline bool operator&(EOverflow a, EOverflow b)
 namespace Detail {
 
 /**
+   CoordArray_t is flattened for single dimension.
+   This is the generic n-dimensional case.
+*/
+template <int DIMENSIONS>
+struct CoordArraySpec_t {
+   using CoordArray_t = Hist::CoordArray_t<DIMENSIONS>;
+};
+
+/**
+   CoordArray_t is flattened for single dimension.
+   This is the generic special 1-dimensional case.
+*/
+template <>
+struct CoordArraySpec_t<1> {
+   using CoordArray_t = Hist::CoordArray_t;
+};
+
+
+/**
  \class RHistImplPrecisionAgnosticBase
  Base class for `RHistImplBase` that abstracts out the histogram's `PRECISION`.
 
@@ -72,7 +91,7 @@ template <int DIMENSIONS>
 class RHistImplPrecisionAgnosticBase {
 public:
    /// Type of the coordinates.
-   using CoordArray_t = Hist::CoordArray_t<DIMENSIONS>;
+   using CoordArray_t = CoordArraySpec<DIMENSIONS>;
    /// Type of the local per-axis bin indices.
    using BinArray_t = std::array<int, DIMENSIONS>;
    /// Range type.
