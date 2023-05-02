@@ -52,9 +52,7 @@ if(imt)
     src/TThreadExecutor.cxx
   )
 
-  target_include_directories(Imt SYSTEM PRIVATE ${TBB_INCLUDE_DIRS})
-  target_link_libraries(Imt PRIVATE ${TBB_LIBRARIES})
-  set_target_properties(Imt PROPERTIES COMPILE_FLAGS "${TBB_CXXFLAGS}")
+  add_dependencies(Imt TBB::tbb)
 
   ROOT_ADD_TEST_SUBDIRECTORY(test)
 else()

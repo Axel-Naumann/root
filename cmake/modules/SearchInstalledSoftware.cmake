@@ -1341,20 +1341,13 @@ if(builtin_tbb)
   set(tbb_sha256 1ce48f34dada7837f510735ff1172f6e2c261b09460e3bf773b49791d247d24e)
 
   if(MSVC)
-    set(vsdir "vs2013")
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      set(tbb_arch x64)
-    else()
-      set(tbb_arch Win32)
-    endif()
-    set(tbbbuild "Release")
     if(winrtdebug)
-      set(tbbbuild "Debug")
       set(tbbsuffix "_debug")
     endif()
-    set(TBB_LIBRARIES ${CMAKE_BINARY_DIR}/lib/tbb${tbbsuffix}.lib)
+    set(_TBB_LIBRARIES ${CMAKE_BINARY_DIR}/bin/tbb12${tbbsuffix}.dll)
+    set(_TBB_IMPLIB ${CMAKE_BINARY_DIR}/lib/tbb12${tbbsuffix}.lib)
   else()
-    set(TBB_LIBRARIES ${CMAKE_BINARY_DIR}/lib/libtbb${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(_TBB_LIBRARIES ${CMAKE_BINARY_DIR}/lib/libtbb${CMAKE_SHARED_LIBRARY_SUFFIX})
   endif()
 
   ExternalProject_Add(
@@ -1380,9 +1373,18 @@ if(builtin_tbb)
      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/include/oneapi ${CMAKE_BINARY_DIR}/ginclude/oneapi
      DEPENDEES install
   )
-  set(TBB_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/ginclude)
-  set(TBB_CXXFLAGS "-DTBB_SUPPRESS_DEPRECATED_MESSAGES=1")
-  set(TBB_TARGET TBB)
+
+  add_library(TBB::tbb SHARED IMPORTED GLOBAL)
+  # Use ginclude/ instead of include/ to not pollute compilations with -Iinclude/.
+  set_target_properties(TBB::tbb PROPERTIES
+    IMPORTED_LOCATION ${_TBB_LIBRARIES}
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/ginclude"
+    INTERFACE_COMPILE_DEFINITIONS "-DTBB_SUPPRESS_DEPRECATED_MESSAGES=1"
+  )
+  if(MSVC)
+    set_target_properties(TBB::tbb PROPERTIES IMPORTED_IMPLIB  ${_TBB_IMPLIB})
+  endif()
+  add_dependencies(TBB::tbb TBB)
 endif()
 
 #---Check for Vc---------------------------------------------------------------------
