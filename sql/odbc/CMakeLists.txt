@@ -24,8 +24,5 @@ ROOT_STANDARD_LIBRARY_PACKAGE(RODBC
     RIO
 )
 
-if(NOT MSVC)
-  target_compile_options(RODBC PUBLIC -Wno-deprecated-declarations)
-endif()
 target_include_directories(RODBC PUBLIC ${ODBC_INCLUDE_DIR})
 target_link_libraries(RODBC PUBLIC ${ODBC_LIBRARIES})
