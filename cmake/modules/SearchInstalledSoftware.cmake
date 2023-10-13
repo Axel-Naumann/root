@@ -1004,17 +1004,6 @@ if(builtin_xrootd)
   set(xrootd ON CACHE BOOL "Enabled because builtin_xrootd requested (${xrootd_description})" FORCE)
 endif()
 
-if(xrootd AND XROOTD_VERSIONNUM VERSION_GREATER_EQUAL 500000000)
-  if(xproofd)
-    if(fail-on-missing)
-      message(FATAL_ERROR "XROOTD is version 5 or greater. The legacy xproofd servers can not be built with this version. Use -Dxproofd:BOOL=OFF to disable.")
-    else()
-      message(STATUS "XROOTD is version 5 or greater. The legacy xproofd servers can not be built with this version. Disabling 'xproofd' option.")
-      set(xproofd OFF CACHE BOOL "Disabled because xrootd version is 5 or greater" FORCE)
-    endif()
-  endif()
-endif()
-
 #---check if netxng and netx can be built-------------------------------
 if(xrootd AND XROOTD_VERSIONNUM VERSION_GREATER 300030005)
   set(netxng ON)

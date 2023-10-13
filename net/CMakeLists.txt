@@ -7,10 +7,6 @@
 add_subdirectory(net)
 add_subdirectory(auth)
 
-if(NOT WIN32 AND ssl)
-  add_subdirectory(rpdutils)
-endif()
-
 if(netx)
   add_subdirectory(netx)
 endif()

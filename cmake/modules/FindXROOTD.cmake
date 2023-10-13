@@ -14,7 +14,6 @@
 #  XROOTD_LIBRARIES - The libraries needed to use XROOTD
 #  XROOTD_CFLAGS - Additional compilation flags (defines)
 #  XROOTD_OLDPACK - old-style packaging for XROOTD libraries
-#  XROOTD_NOMAIN - No main available: xproofd not build
 #  XROOTD_NOOLDCLNT - No old client available: use built-in version
 #
 
@@ -118,11 +117,6 @@ if(XROOTD_FOUND)
        PATH_SUFFIXES lib)
     if (XROOTD_XrdMain_LIBRARY)
        list(APPEND XROOTD_LIBRARIES ${XROOTD_XrdMain_LIBRARY})
-    else ()
-       set(XROOTD_NOMAIN TRUE)
-       if(NOT XROOTD_FIND_QUIETLY)
-          message(STATUS "             libXrdMain not found: xproofd will be a wrapper around xrootd")
-       endif ()
     endif ()
 
     # libXrdUtils
